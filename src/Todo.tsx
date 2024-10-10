@@ -13,9 +13,8 @@ import Checkbox from "@mui/material/Checkbox";
 import React, { useState } from "react";
 import { useId } from "react";
 import AddIcon from "@mui/icons-material/Add";
-import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-
+import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 type TodoItem = {
   id: string;
   text: string;
@@ -50,8 +49,10 @@ const Todo = () => {
     },
   ];
 
+  const generateId = useId();
+  const [todoText, setTodoText] = useState<string>("");
   const [todoList, setTodoList] = useState<TodoItem[] | null>(initialState);
-
+  //handle a checkbox check
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     id: string
@@ -68,6 +69,34 @@ const Todo = () => {
     });
   };
 
+  const addTodo = (): void => {
+    if (todoText.length !== 0) {
+      const newTodo: TodoItem = {
+        id: generateId,
+        text: todoText,
+        complete: false,
+      };
+      setTodoList((prev) => {
+        if (!prev) return null;
+        return [newTodo, ...prev];
+      });
+      setTodoText("");
+    }
+  };
+
+  const deleteTodo = (id: string): void => {
+    setTodoList((prev) => {
+      if (!prev) return null;
+
+      return prev.filter((item) => {
+        if (item.id === id) {
+          return false;
+        }
+        return true;
+      });
+    });
+  };
+
   return (
     <>
       <Box sx={{ flexGrow: 1, maxWidth: 752, margin: "2px auto" }}>
@@ -75,8 +104,15 @@ const Todo = () => {
           My To-Do List
         </Typography>
         <Grid2>
-          <TextField label="freeSolo" />
-          <IconButton>
+          <TextField
+            label="New ToDo"
+            value={todoText}
+            sx={{ width: 400 }}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              setTodoText(event.target.value)
+            }
+          />
+          <IconButton onClick={addTodo}>
             <AddIcon></AddIcon>
           </IconButton>
         </Grid2>
@@ -86,14 +122,20 @@ const Todo = () => {
             todoList.map((todo: TodoItem) => {
               return (
                 <ListItem disablePadding key={todo.id}>
-                  {/* TODO: replce the listItemButton with appropriate component */}
+                  {/* Main clickable item */}
                   <ListItemButton>
                     <Checkbox
                       checked={todo.complete}
-                      onChange={(event) =>
-                        handleChange(event, todo.id)
-                      }></Checkbox>
+                      onChange={(event) => handleChange(event, todo.id)}
+                    />
                     <ListItemText primary={todo.text} />
+
+                    {/* Replace ListItemButton with IconButton for delete action */}
+                    <IconButton
+                      sx={{ width: 40 }} // You can adjust the width as needed
+                      onClick={() => deleteTodo(todo.id)}>
+                      <DeleteSweepIcon />
+                    </IconButton>
                   </ListItemButton>
                 </ListItem>
               );
