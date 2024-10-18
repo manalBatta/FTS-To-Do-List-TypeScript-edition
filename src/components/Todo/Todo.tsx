@@ -87,9 +87,8 @@ const Todo = () => {
                     />
                     <ListItemText primary={todo.text} />
 
-                    {/* Replace ListItemButton with IconButton for delete action */}
                     <IconButton
-                      sx={{ width: 40 }} // You can adjust the width as needed
+                      sx={{ width: 40 }}
                       onClick={() => deleteTodo(todo.id)}>
                       <DeleteSweepIcon />
                     </IconButton>
