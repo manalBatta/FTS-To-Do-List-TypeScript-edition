@@ -3,7 +3,6 @@ import {
   Grid2,
   IconButton,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
   Typography,
 } from "@mui/material";
@@ -15,86 +14,44 @@ import { useId } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import TextField from "@mui/material/TextField";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
-type TodoItem = {
-  id: string;
-  text: string;
-  complete: boolean;
-};
-const Todo = () => {
-  const initialState = [
-    {
-      id: useId(),
-      text: "Buy groceries",
-      complete: false,
-    },
-    {
-      id: useId(),
-      text: "Finish React project",
-      complete: true,
-    },
-    {
-      id: useId(),
-      text: "Schedule doctor appointment",
-      complete: false,
-    },
-    {
-      id: useId(),
-      text: "Walk the dog",
-      complete: true,
-    },
-    {
-      id: useId(),
-      text: "Read a book for 30 minutes",
-      complete: false,
-    },
-  ];
+import { todo } from "../constants/constants";
+import { TodoItem } from "../types/types";
 
+const Todo = () => {
   const generateId = useId();
   const [todoText, setTodoText] = useState<string>("");
-  const [todoList, setTodoList] = useState<TodoItem[] | null>(initialState);
-  //handle a checkbox check
-  const handleChange = (
+  const [todoList, setTodoList] = useState<TodoItem[] | []>(todo);
+  const toggleTodoCompletion = (
     event: React.ChangeEvent<HTMLInputElement>,
     id: string
   ): void => {
-    setTodoList((prev) => {
-      if (!prev) return null;
+    const { checked } = event.target;
 
-      return prev.map((item) => {
-        if (item.id === id) {
-          return { ...item, complete: event.target.checked };
-        }
-        return item;
-      });
-    });
+    setTodoList((prev = []) =>
+      prev.map((item) =>
+        item.id === id && item.complete !== checked
+          ? { ...item, complete: checked }
+          : item
+      )
+    );
   };
 
   const addTodo = (): void => {
-    if (todoText.length !== 0) {
-      const newTodo: TodoItem = {
-        id: generateId,
-        text: todoText,
-        complete: false,
-      };
-      setTodoList((prev) => {
-        if (!prev) return null;
-        return [newTodo, ...prev];
-      });
+    if (todoText?.trim().length !== 0) {
+      setTodoList((prev = []) => [
+        {
+          id: generateId,
+          text: todoText,
+          complete: false,
+        },
+        ...prev,
+      ]);
       setTodoText("");
     }
   };
 
   const deleteTodo = (id: string): void => {
-    setTodoList((prev) => {
-      if (!prev) return null;
-
-      return prev.filter((item) => {
-        if (item.id === id) {
-          return false;
-        }
-        return true;
-      });
-    });
+    setTodoList((prev = []) => prev.filter((item) => item.id !== id));
   };
 
   return (
@@ -126,7 +83,7 @@ const Todo = () => {
                   <ListItemButton>
                     <Checkbox
                       checked={todo.complete}
-                      onChange={(event) => handleChange(event, todo.id)}
+                      onChange={(event) => toggleTodoCompletion(event, todo.id)}
                     />
                     <ListItemText primary={todo.text} />
 
