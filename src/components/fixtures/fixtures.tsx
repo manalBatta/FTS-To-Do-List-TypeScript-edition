@@ -1,4 +1,6 @@
-export const todo = [
+import { TodoItem } from "../types/types";
+
+export const todoMockData: TodoItem[] = [
   {
     id: "1",
     text: "Buy groceries",
